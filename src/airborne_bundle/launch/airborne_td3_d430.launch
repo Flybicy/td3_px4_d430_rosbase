@@ -1,0 +1,40 @@
+<launch>
+  <arg name="odom_topic" default="/mavros/local_position/odom"/>
+  <arg name="goal_topic" default="/move_base_simple/goal"/>
+  <arg name="cloud_topic" default="/camera/depth/color/points"/>
+  <arg name="cmd_topic" default="/airborne_planner/position_cmd"/>
+  <arg name="model_path" default="$(find airborne_bundle)/models/actor_weights.npz"/>
+  <arg name="policy_backend" default="numpy"/>
+  <arg name="rate" default="20.0"/>
+  <arg name="max_vel" default="1.2"/>
+  <arg name="max_acc" default="1.8"/>
+  <arg name="max_z_vel" default="0.35"/>
+  <arg name="world_size" default="20.0"/>
+  <arg name="sensor_range" default="4.5"/>
+  <arg name="z_min" default="0.4"/>
+  <arg name="z_max" default="3.0"/>
+  <arg name="debug" default="false"/>
+
+  <node pkg="airborne_bundle" type="td3_velocity_planner.py" name="airborne_td3_velocity_planner" output="screen">
+    <remap from="odom" to="$(arg odom_topic)"/>
+    <remap from="goal" to="$(arg goal_topic)"/>
+    <remap from="obstacle_cloud" to="$(arg cloud_topic)"/>
+    <remap from="position_cmd" to="$(arg cmd_topic)"/>
+    <param name="policy_backend" value="$(arg policy_backend)"/>
+    <param name="model_path" value="$(arg model_path)"/>
+    <param name="debug" value="$(arg debug)"/>
+    <param name="rate" value="$(arg rate)"/>
+    <param name="max_vel" value="$(arg max_vel)"/>
+    <param name="max_acc" value="$(arg max_acc)"/>
+    <param name="max_z_vel" value="$(arg max_z_vel)"/>
+    <param name="world_size" value="$(arg world_size)"/>
+    <param name="sensor_range" value="$(arg sensor_range)"/>
+    <param name="yaw_rays" value="12"/>
+    <param name="pitch_rays" value="3"/>
+    <param name="max_cloud_points" value="1500"/>
+    <param name="z_min" value="$(arg z_min)"/>
+    <param name="z_max" value="$(arg z_max)"/>
+    <param name="goal_z_min" value="$(arg z_min)"/>
+    <param name="default_goal_z" value="1.2"/>
+  </node>
+</launch>

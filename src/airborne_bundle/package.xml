@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>airborne_bundle</name>
+  <version>0.0.1</version>
+  <description>Minimal onboard TD3 and TSP runtime bundle</description>
+  <maintainer email="anonymous@example.com">anonymous</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>quadrotor_msgs</depend>
+  <export/>
+</package>

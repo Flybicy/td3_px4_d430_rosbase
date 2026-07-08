@@ -1,0 +1,59 @@
+<launch>
+  <arg name="odom_topic" default="/mavros/local_position/odom"/>
+  <arg name="goal_trigger_topic" default="/move_base_simple/goal"/>
+  <arg name="cloud_topic" default="/camera/depth/color/points"/>
+  <arg name="cmd_topic" default="/airborne_planner/position_cmd"/>
+  <arg name="goal_out_topic" default="/airborne_tsp_goal"/>
+  <arg name="model_path" default="$(find airborne_bundle)/models/actor_weights.npz"/>
+  <arg name="point_num" default="5"/>
+  <arg name="target0_x" default="5.0"/>
+  <arg name="target0_y" default="0.0"/>
+  <arg name="target0_z" default="1.2"/>
+  <arg name="target1_x" default="8.0"/>
+  <arg name="target1_y" default="3.0"/>
+  <arg name="target1_z" default="1.2"/>
+  <arg name="target2_x" default="10.0"/>
+  <arg name="target2_y" default="-2.0"/>
+  <arg name="target2_z" default="1.2"/>
+  <arg name="target3_x" default="13.0"/>
+  <arg name="target3_y" default="2.0"/>
+  <arg name="target3_z" default="1.2"/>
+  <arg name="target4_x" default="15.0"/>
+  <arg name="target4_y" default="0.0"/>
+  <arg name="target4_z" default="1.2"/>
+
+  <include file="$(find airborne_bundle)/launch/airborne_td3_d430.launch">
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="goal_topic" value="$(arg goal_out_topic)"/>
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+    <arg name="cmd_topic" value="$(arg cmd_topic)"/>
+    <arg name="model_path" value="$(arg model_path)"/>
+  </include>
+
+  <node pkg="airborne_bundle" type="td3_tsp_goal_manager.py" name="airborne_td3_tsp_goal_manager" output="screen">
+    <remap from="odom" to="$(arg odom_topic)"/>
+    <remap from="goal_out" to="$(arg goal_out_topic)"/>
+    <remap from="nav_goal" to="$(arg goal_trigger_topic)"/>
+    <param name="goal_frame_id" value="map"/>
+    <param name="wait_for_trigger" value="true"/>
+    <param name="start_on_launch" value="false"/>
+    <param name="arrival_tolerance" value="0.40"/>
+    <param name="exact_tsp_limit" value="10"/>
+    <param name="point_num" value="$(arg point_num)"/>
+    <param name="target0_x" value="$(arg target0_x)"/>
+    <param name="target0_y" value="$(arg target0_y)"/>
+    <param name="target0_z" value="$(arg target0_z)"/>
+    <param name="target1_x" value="$(arg target1_x)"/>
+    <param name="target1_y" value="$(arg target1_y)"/>
+    <param name="target1_z" value="$(arg target1_z)"/>
+    <param name="target2_x" value="$(arg target2_x)"/>
+    <param name="target2_y" value="$(arg target2_y)"/>
+    <param name="target2_z" value="$(arg target2_z)"/>
+    <param name="target3_x" value="$(arg target3_x)"/>
+    <param name="target3_y" value="$(arg target3_y)"/>
+    <param name="target3_z" value="$(arg target3_z)"/>
+    <param name="target4_x" value="$(arg target4_x)"/>
+    <param name="target4_y" value="$(arg target4_y)"/>
+    <param name="target4_z" value="$(arg target4_z)"/>
+  </node>
+</launch>

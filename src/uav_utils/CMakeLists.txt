@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.0.2)
+project(uav_utils)
+find_package(catkin REQUIRED COMPONENTS roscpp rospy geometry_msgs nav_msgs)
+find_package(Eigen3 REQUIRED)
+catkin_package(INCLUDE_DIRS include CATKIN_DEPENDS roscpp rospy geometry_msgs nav_msgs)
+include_directories(include ${EIGEN3_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+install(DIRECTORY include/${PROJECT_NAME}/ DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})

@@ -1,0 +1,18 @@
+<launch>
+  <arg name="fcu_url" default="/dev/ttyS0:921600"/>
+  <arg name="odom_topic" default="/mavros/local_position/odom"/>
+  <arg name="cloud_topic" default="/camera/depth/color/points"/>
+
+  <include file="$(find airborne_bundle)/launch/mavros_serial.launch">
+    <arg name="fcu_url" value="$(arg fcu_url)"/>
+  </include>
+
+  <include file="$(find airborne_bundle)/launch/airborne_px4ctrl.launch">
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+  </include>
+
+  <include file="$(find airborne_bundle)/launch/airborne_td3_d430.launch">
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+  </include>
+</launch>

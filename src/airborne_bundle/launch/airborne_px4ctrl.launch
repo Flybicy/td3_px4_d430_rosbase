@@ -1,0 +1,15 @@
+<launch>
+  <arg name="odom_topic" default="/mavros/local_position/odom"/>
+  <arg name="cmd_topic" default="/airborne_planner/position_cmd"/>
+  <arg name="no_rc" default="true"/>
+
+  <node pkg="px4ctrl" type="px4ctrl_node" name="px4ctrl" output="screen">
+    <remap from="~odom" to="$(arg odom_topic)" />
+    <remap from="~cmd" to="$(arg cmd_topic)" />
+    <rosparam command="load" file="$(find airborne_bundle)/config/ctrl_param_fpv.yaml" />
+    <rosparam>
+      auto_takeoff_land:
+        no_RC: $(arg no_rc)
+    </rosparam>
+  </node>
+</launch>

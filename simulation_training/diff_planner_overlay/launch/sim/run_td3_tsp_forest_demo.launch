@@ -1,0 +1,113 @@
+<launch>
+  <arg name="drone_id" default="0"/>
+  <arg name="odom_topic" default="visual_slam/odom"/>
+  <arg name="init_x" default="-12.0"/>
+  <arg name="init_y" default="0.0"/>
+  <arg name="init_z" default="1.2"/>
+
+  <arg name="map_size_x" default="60.0"/>
+  <arg name="map_size_y" default="40.0"/>
+  <arg name="map_size_z" default="3.0"/>
+
+  <arg name="model_path" default="$(find diff_planner)/models/actor_weights.npz"/>
+  <arg name="policy_backend" default="numpy"/>
+  <arg name="debug" default="true"/>
+  <arg name="show_depth_window" default="true"/>
+  <arg name="use_depth_colorizer" default="true"/>
+  <arg name="wait_for_trigger" default="true"/>
+  <arg name="start_on_launch" default="false"/>
+  <arg name="arrival_tolerance" default="0.35"/>
+  <arg name="exact_tsp_limit" default="10"/>
+
+  <arg name="point_num" default="10"/>
+  <arg name="target0_x" default="-9.5"/>
+  <arg name="target0_y" default="-4.8"/>
+  <arg name="target0_z" default="1.2"/>
+  <arg name="target1_x" default="-7.2"/>
+  <arg name="target1_y" default="3.9"/>
+  <arg name="target1_z" default="1.3"/>
+  <arg name="target2_x" default="-4.8"/>
+  <arg name="target2_y" default="-1.4"/>
+  <arg name="target2_z" default="1.2"/>
+  <arg name="target3_x" default="-2.5"/>
+  <arg name="target3_y" default="5.0"/>
+  <arg name="target3_z" default="1.3"/>
+  <arg name="target4_x" default="0.0"/>
+  <arg name="target4_y" default="-4.8"/>
+  <arg name="target4_z" default="1.2"/>
+  <arg name="target5_x" default="2.6"/>
+  <arg name="target5_y" default="3.6"/>
+  <arg name="target5_z" default="1.3"/>
+  <arg name="target6_x" default="5.0"/>
+  <arg name="target6_y" default="-2.0"/>
+  <arg name="target6_z" default="1.2"/>
+  <arg name="target7_x" default="7.3"/>
+  <arg name="target7_y" default="5.1"/>
+  <arg name="target7_z" default="1.3"/>
+  <arg name="target8_x" default="9.8"/>
+  <arg name="target8_y" default="-4.2"/>
+  <arg name="target8_z" default="1.2"/>
+  <arg name="target9_x" default="12.2"/>
+  <arg name="target9_y" default="2.8"/>
+  <arg name="target9_z" default="1.3"/>
+
+  <include file="$(find diff_planner)/launch/sim/run_td3_forest_depth_demo.launch">
+    <arg name="drone_id" value="$(arg drone_id)"/>
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="init_x" value="$(arg init_x)"/>
+    <arg name="init_y" value="$(arg init_y)"/>
+    <arg name="init_z" value="$(arg init_z)"/>
+    <arg name="map_size_x" value="$(arg map_size_x)"/>
+    <arg name="map_size_y" value="$(arg map_size_y)"/>
+    <arg name="map_size_z" value="$(arg map_size_z)"/>
+    <arg name="goal_topic" value="/drone_$(arg drone_id)_td3_tsp_goal"/>
+    <arg name="model_path" value="$(arg model_path)"/>
+    <arg name="policy_backend" value="$(arg policy_backend)"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="show_depth_window" value="$(arg show_depth_window)"/>
+    <arg name="use_depth_colorizer" value="$(arg use_depth_colorizer)"/>
+  </include>
+
+  <node pkg="diff_planner" type="td3_tsp_goal_manager.py"
+        name="drone_$(arg drone_id)_td3_tsp_goal_manager" output="screen">
+    <remap from="odom" to="/drone_$(arg drone_id)_$(arg odom_topic)"/>
+    <remap from="goal_out" to="/drone_$(arg drone_id)_td3_tsp_goal"/>
+    <remap from="nav_goal" to="/move_base_simple/goal"/>
+    <param name="goal_frame_id" value="world"/>
+    <param name="wait_for_trigger" value="$(arg wait_for_trigger)"/>
+    <param name="start_on_launch" value="$(arg start_on_launch)"/>
+    <param name="arrival_tolerance" value="$(arg arrival_tolerance)"/>
+    <param name="exact_tsp_limit" value="$(arg exact_tsp_limit)"/>
+    <param name="point_num" value="$(arg point_num)"/>
+    <param name="target0_x" value="$(arg target0_x)"/>
+    <param name="target0_y" value="$(arg target0_y)"/>
+    <param name="target0_z" value="$(arg target0_z)"/>
+    <param name="target1_x" value="$(arg target1_x)"/>
+    <param name="target1_y" value="$(arg target1_y)"/>
+    <param name="target1_z" value="$(arg target1_z)"/>
+    <param name="target2_x" value="$(arg target2_x)"/>
+    <param name="target2_y" value="$(arg target2_y)"/>
+    <param name="target2_z" value="$(arg target2_z)"/>
+    <param name="target3_x" value="$(arg target3_x)"/>
+    <param name="target3_y" value="$(arg target3_y)"/>
+    <param name="target3_z" value="$(arg target3_z)"/>
+    <param name="target4_x" value="$(arg target4_x)"/>
+    <param name="target4_y" value="$(arg target4_y)"/>
+    <param name="target4_z" value="$(arg target4_z)"/>
+    <param name="target5_x" value="$(arg target5_x)"/>
+    <param name="target5_y" value="$(arg target5_y)"/>
+    <param name="target5_z" value="$(arg target5_z)"/>
+    <param name="target6_x" value="$(arg target6_x)"/>
+    <param name="target6_y" value="$(arg target6_y)"/>
+    <param name="target6_z" value="$(arg target6_z)"/>
+    <param name="target7_x" value="$(arg target7_x)"/>
+    <param name="target7_y" value="$(arg target7_y)"/>
+    <param name="target7_z" value="$(arg target7_z)"/>
+    <param name="target8_x" value="$(arg target8_x)"/>
+    <param name="target8_y" value="$(arg target8_y)"/>
+    <param name="target8_z" value="$(arg target8_z)"/>
+    <param name="target9_x" value="$(arg target9_x)"/>
+    <param name="target9_y" value="$(arg target9_y)"/>
+    <param name="target9_z" value="$(arg target9_z)"/>
+  </node>
+</launch>

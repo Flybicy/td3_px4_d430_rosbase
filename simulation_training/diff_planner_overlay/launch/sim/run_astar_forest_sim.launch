@@ -1,0 +1,142 @@
+<launch>
+  <!-- Original Diff-Planner/A* simulation in a forest-like cylinder map. -->
+  <arg name="drone_id" default="0"/>
+  <arg name="odom_topic" default="visual_slam/odom"/>
+  <arg name="init_x" default="-12.0"/>
+  <arg name="init_y" default="0.0"/>
+  <arg name="init_z" default="1.2"/>
+
+  <arg name="map_size_x" default="60.0"/>
+  <arg name="map_size_y" default="40.0"/>
+  <arg name="map_size_z" default="3.0"/>
+
+  <arg name="forest_x" default="30.0"/>
+  <arg name="forest_y" default="18.0"/>
+  <arg name="forest_z" default="3.0"/>
+  <arg name="tree_count" default="95"/>
+  <arg name="tree_radius_min" default="0.35"/>
+  <arg name="tree_radius_max" default="0.60"/>
+  <arg name="tree_height_min" default="2.6"/>
+  <arg name="tree_height_max" default="3.0"/>
+  <arg name="tree_min_dist" default="1.15"/>
+
+  <arg name="rviz" default="true"/>
+  <arg name="rviz_config" default="$(find diff_planner)/launch/include/astar_forest_demo.rviz"/>
+  <arg name="use_depth_colorizer" default="true"/>
+  <arg name="show_depth_window" default="true"/>
+  <arg name="enable_clicked_point_goal" default="false"/>
+  <arg name="start_on_2d_nav_goal" default="true"/>
+
+  <!-- Multi-waypoint demo: the drone will plan through these points in order. -->
+  <arg name="flight_type" default="2"/>
+  <arg name="point_num" default="5"/>
+  <arg name="target0_x" default="-8.5"/>
+  <arg name="target0_y" default="-4.2"/>
+  <arg name="target0_z" default="1.2"/>
+  <arg name="target1_x" default="-4.5"/>
+  <arg name="target1_y" default="4.0"/>
+  <arg name="target1_z" default="1.3"/>
+  <arg name="target2_x" default="0.5"/>
+  <arg name="target2_y" default="-4.4"/>
+  <arg name="target2_z" default="1.2"/>
+  <arg name="target3_x" default="5.8"/>
+  <arg name="target3_y" default="3.8"/>
+  <arg name="target3_z" default="1.3"/>
+  <arg name="target4_x" default="10.8"/>
+  <arg name="target4_y" default="-3.3"/>
+  <arg name="target4_z" default="1.2"/>
+
+  <node pkg="map_generator" name="random_forest" type="random_forest" output="screen">
+    <param name="map/x_size" value="$(arg forest_x)"/>
+    <param name="map/y_size" value="$(arg forest_y)"/>
+    <param name="map/z_size" value="$(arg forest_z)"/>
+    <param name="map/resolution" value="0.10"/>
+    <param name="map/obs_num" value="$(arg tree_count)"/>
+    <param name="ObstacleShape/lower_rad" value="$(arg tree_radius_min)"/>
+    <param name="ObstacleShape/upper_rad" value="$(arg tree_radius_max)"/>
+    <param name="ObstacleShape/lower_hei" value="$(arg tree_height_min)"/>
+    <param name="ObstacleShape/upper_hei" value="$(arg tree_height_max)"/>
+    <param name="map/circle_num" value="0"/>
+    <param name="ObstacleShape/radius_l" value="0.7"/>
+    <param name="ObstacleShape/radius_h" value="0.5"/>
+    <param name="ObstacleShape/z_l" value="0.7"/>
+    <param name="ObstacleShape/z_h" value="0.8"/>
+    <param name="ObstacleShape/theta" value="0.5"/>
+    <param name="pub_rate" value="1.0"/>
+    <param name="min_distance" value="$(arg tree_min_dist)"/>
+  </node>
+
+  <include file="$(find diff_planner)/launch/include/run_in_sim.xml">
+    <arg name="drone_id" value="$(arg drone_id)"/>
+    <arg name="init_x" value="$(arg init_x)"/>
+    <arg name="init_y" value="$(arg init_y)"/>
+    <arg name="init_z" value="$(arg init_z)"/>
+    <arg name="map_size_x" value="$(arg map_size_x)"/>
+    <arg name="map_size_y" value="$(arg map_size_y)"/>
+    <arg name="map_size_z" value="$(arg map_size_z)"/>
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="flight_type" value="$(arg flight_type)"/>
+    <arg name="point_num" value="$(arg point_num)"/>
+    <arg name="target0_x" value="$(arg target0_x)"/>
+    <arg name="target0_y" value="$(arg target0_y)"/>
+    <arg name="target0_z" value="$(arg target0_z)"/>
+    <arg name="target1_x" value="$(arg target1_x)"/>
+    <arg name="target1_y" value="$(arg target1_y)"/>
+    <arg name="target1_z" value="$(arg target1_z)"/>
+    <arg name="target2_x" value="$(arg target2_x)"/>
+    <arg name="target2_y" value="$(arg target2_y)"/>
+    <arg name="target2_z" value="$(arg target2_z)"/>
+    <arg name="target3_x" value="$(arg target3_x)"/>
+    <arg name="target3_y" value="$(arg target3_y)"/>
+    <arg name="target3_z" value="$(arg target3_z)"/>
+    <arg name="target4_x" value="$(arg target4_x)"/>
+    <arg name="target4_y" value="$(arg target4_y)"/>
+    <arg name="target4_z" value="$(arg target4_z)"/>
+  </include>
+
+  <node if="$(arg enable_clicked_point_goal)" pkg="diff_planner" type="clicked_point_goal_bridge.py"
+        name="clicked_point_goal_bridge" output="screen">
+    <remap from="clicked_point" to="/clicked_point"/>
+    <remap from="goal" to="/goal"/>
+    <param name="default_z" value="$(arg init_z)"/>
+    <param name="min_z" value="0.2"/>
+  </node>
+
+  <node if="$(arg use_depth_colorizer)" pkg="diff_planner" type="depth_cloud_colorizer.py"
+        name="drone_$(arg drone_id)_depth_cloud_colorizer" output="screen">
+    <remap from="global_cloud" to="/map_generator/global_cloud"/>
+    <remap from="odom" to="/drone_$(arg drone_id)_$(arg odom_topic)"/>
+    <remap from="depth" to="/drone_$(arg drone_id)_demo_pcl_render_node/depth"/>
+    <remap from="colordepth" to="/drone_$(arg drone_id)_demo_pcl_render_node/colordepth"/>
+    <remap from="rendered_pcl" to="/drone_$(arg drone_id)_demo_pcl_render_node/rendered_pcl"/>
+    <param name="cam_width" value="640"/>
+    <param name="cam_height" value="480"/>
+    <param name="cam_fx" value="387.229248046875"/>
+    <param name="cam_fy" value="387.229248046875"/>
+    <param name="cam_cx" value="321.04638671875"/>
+    <param name="cam_cy" value="243.44969177246094"/>
+    <param name="min_depth" value="0.3"/>
+    <param name="max_depth" value="5.0"/>
+    <param name="publish_rate" value="12.0"/>
+    <param name="color_map" value="jet"/>
+    <param name="frame_id" value="camera"/>
+    <param name="display_dilate" value="4"/>
+  </node>
+
+  <node if="$(arg show_depth_window)" pkg="image_view" type="image_view"
+        name="drone_$(arg drone_id)_astar_color_depth_view" output="screen">
+    <remap from="image" to="/drone_$(arg drone_id)_demo_pcl_render_node/colordepth"/>
+  </node>
+
+  <node if="$(arg start_on_2d_nav_goal)" pkg="diff_planner" type="nav_goal_trigger_bridge.py"
+        name="drone_$(arg drone_id)_nav_goal_trigger_bridge" output="screen">
+    <remap from="nav_goal" to="/move_base_simple/goal"/>
+    <remap from="traj_start_trigger" to="/traj_start_trigger"/>
+    <param name="repeat" value="2"/>
+    <param name="interval" value="0.2"/>
+  </node>
+
+  <node if="$(arg rviz)" pkg="rviz" type="rviz"
+        name="astar_forest_rviz_$(arg drone_id)"
+        args="-d $(arg rviz_config)"/>
+</launch>
